@@ -1,8 +1,2 @@
-#acartwright test 3
-#Ejohnson
-#snelson
+#base cleanup
 print("Hello, World!")
-#Roi test
-
-#Ricky test
-#logan test
