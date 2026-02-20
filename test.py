@@ -1,4 +1,5 @@
-#Logan test another
-print("This is a test file. -- Logan")
-x = input("Enter a number: ")
-print("You entered: ", x)
+#Logan test idk
+numb = input("Enter a number: ")
+if(int(numb)%2==0):
+    print("Even")
+else:    print("Odd")
