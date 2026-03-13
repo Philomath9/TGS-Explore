@@ -5,6 +5,7 @@ import math
 
 def doGraphicsSetup(gameSetup):
     pygame.init()
+    pygame.mixer.init()
 # ── Full Screen Setup ────────────────────────────────────────
     info = pygame.display.Info()
     WIDTH = info.current_w
@@ -20,6 +21,14 @@ def doGraphicsSetup(gameSetup):
     space = pymunk.Space()
     space.gravity = (0, 0)      # No gravity for top-down
     space.damping = 0.92        # Air resistance for smooth stopping
+    #loadsoundeffects
+    gameSetup['spawn_sound'] = pygame.mixer.Sound("spawn.mp3")
+    #gameSetup['jump_sound'] = pygame.mixer.Sound("jump.wav")
+    #gameSetup['jump_sound'] = pygame.mixer.Sound("jump.wav")
+    #gameSetup['jump_sound'] = pygame.mixer.Sound("jump.wav")
+
+
+
 
     gameSetup['screen'] = screen
     gameSetup['space'] = space

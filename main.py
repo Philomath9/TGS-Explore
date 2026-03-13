@@ -114,6 +114,7 @@ while running:
                 box_shape.elasticity = 0.8
                 box_shape.friction = 0.7
                 gameSetup["space"].add(box, box_shape)
+                gameSetup['spawn_sound'].play()
 
 
 
