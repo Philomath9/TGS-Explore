@@ -69,7 +69,7 @@ def draw_circle(screen, pos, radius, color, cam_center, zoom):
 
 # ── Main Loop ─────────────────────────────────────────────────
 running = True
-thrust_force = 4500  # Tune for speed/feel
+thrust_force = 750  # Tune for speed/feel
 
 while running:
     dt = gameSetup["clock"].tick(60) / 1000.0
