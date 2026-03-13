@@ -117,20 +117,6 @@ while running:
 
     player.update_movement(keys, dt)
 
-    # ── Input: Physics-based WASD movement ──────────────────────
-    force = (0, 0)
-    if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-        force = (-thrust_force, 0)
-    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-        force = (thrust_force, 0)
-    if keys[pygame.K_w] or keys[pygame.K_UP]:
-        force = (0, thrust_force)
-    if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-        force = (0, -thrust_force)
-    if force != (0, 0):
-        player.body.apply_force_at_local_point(force, (0, 0))
-    player.update_movement(keys, dt)
-
 
     # ── Physics Step ────────────────────────────────────────────
     gameSetup["space"].step(1 / 60.0)  # Fixed timestep
