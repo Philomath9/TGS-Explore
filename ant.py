@@ -6,7 +6,7 @@ class Ant:
     def __init__(self, gameSetup, scale):
 
         # Load and Scale sprite for ant
-        original = pygame.image.load(r"TGS-Explore\Sprites\ant.png").convert_alpha()
+        original = pygame.image.load(r"ant.png").convert_alpha()
         ow, oh = original.get_size()
         width = int(ow * scale)
         height = int(oh * scale)
