@@ -10,7 +10,8 @@ class Ant:
         ow, oh = original.get_size()
         width = int(ow * scale)
         height = int(oh * scale)
-        self.image = pygame.transform.smoothscale(original, (width, height))
+        self.original_image = pygame.transform.smoothscale(original, (width, height))
+        self.image = self.original_image
 
         # Physics body (rotation locked)
         self.body = pymunk.Body(mass=2.0, moment=math.inf)
@@ -24,7 +25,26 @@ class Ant:
 
         self.shape.color = (255, 120, 120)  # For debug draw if needed
 
+        self.angle = 0
+
         gameSetup["space"].add(self.body, self.shape)
+
+    def move(self, direction, thrust_force):
+        force = (0,0)
+        if direction == 'left':
+            force = (-thrust_force, 0)
+        if direction == 'right':
+            force = (thrust_force, 0)
+        if direction == 'up':
+            force = (0, thrust_force)
+        if direction == 'down':
+            force = (0, -thrust_force)
+        
+        if force != (0, 0):
+            # Change 'local' to 'world' to ignore the player's rotation
+            self.body.apply_force_at_world_point(force, self.body.position)
+
+
     
     def draw(self, gameSetup, cam_pos, zoom):
         
@@ -36,5 +56,14 @@ class Ant:
         sy = dy + gameSetup["HEIGHT"] / 2
 
         screen_pos = int(sx), int(sy)
-        rect = self.image.get_rect(center=(int(screen_pos[0]), int(screen_pos[1])))
-        gameSetup["screen"].blit(self.image, rect)
+
+        # Turn Ant based off its velocity
+        vx, vy = self.body.velocity
+        speed = math.hypot(vx, vy)
+        if speed > 5:
+            self.angle = math.degrees(math.atan2(vy, vx)) - 90
+
+        rotated = pygame.transform.rotate(self.original_image, self.angle)
+
+        rect = rotated.get_rect(center=screen_pos)
+        gameSetup["screen"].blit(rotated, rect)
