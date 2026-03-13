@@ -27,23 +27,29 @@ class Ant:
 
         self.angle = 0
         self.turn_speed = 0.15
+        self.move_speed = 500.0
+        self.move_accel = 24.0
+        self.move_decel = 4.5
+        self.input_smoothing = 6.0
+        self.smoothed_input = pymunk.Vec2d(0.0, 0.0)
 
         gameSetup["space"].add(self.body, self.shape)
 
-    def move(self, direction, thrust_force):
-        force = (0,0)
-        if direction == 'left':
-            force = (-thrust_force, 0)
-        if direction == 'right':
-            force = (thrust_force, 0)
-        if direction == 'up':
-            force = (0, thrust_force)
-        if direction == 'down':
-            force = (0, -thrust_force)
-        
-        if force != (0, 0):
-            # Change 'local' to 'world' to ignore the player's rotation
-            self.body.apply_force_at_world_point(force, self.body.position)
+    def update_movement(self, keys, dt):
+        input_x = float(keys[pygame.K_d] or keys[pygame.K_RIGHT]) - float(keys[pygame.K_a] or keys[pygame.K_LEFT])
+        input_y = float(keys[pygame.K_w] or keys[pygame.K_UP]) - float(keys[pygame.K_s] or keys[pygame.K_DOWN])
+
+        input_vec = pymunk.Vec2d(input_x, input_y)
+        if input_vec.length > 1:
+            input_vec = input_vec.normalized()
+
+        input_blend = min(1.0, self.input_smoothing * dt)
+        self.smoothed_input += (input_vec - self.smoothed_input) * input_blend
+
+        desired_velocity = self.smoothed_input * self.move_speed
+        response = self.move_accel if input_vec.length > 0 else self.move_decel
+        blend = min(1.0, response * dt)
+        self.body.velocity += (desired_velocity - self.body.velocity) * blend
 
 
     

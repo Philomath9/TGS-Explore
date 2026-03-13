@@ -69,7 +69,6 @@ def draw_circle(screen, pos, radius, color, cam_center, zoom):
 
 # ── Main Loop ─────────────────────────────────────────────────
 running = True
-thrust_force = 750  # Tune for speed/feel
 
 while running:
     dt = gameSetup["clock"].tick(60) / 1000.0
@@ -114,23 +113,7 @@ while running:
                 box_shape.elasticity = 0.8
                 box_shape.friction = 0.7
                 gameSetup["space"].add(box, box_shape)
-
-
-
-    if keys[pygame.K_a] or keys[pygame.K_LEFT]:
-        player.move('left', thrust_force)
-    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-        player.move('right', thrust_force)
-    if keys[pygame.K_w] or keys[pygame.K_UP]:
-        player.move('up', thrust_force)
-    if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-        player.move('down', thrust_force)
-
-    maxspeed = 750 
-    curspeed = player.body.velocity.length
-    if curspeed > maxspeed:
-        scale = maxspeed / curspeed
-        player.body.velocity = player.body.velocity * scale
+    player.update_movement(keys, dt)
 
 
     # ── Physics Step ────────────────────────────────────────────
