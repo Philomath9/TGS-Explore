@@ -117,7 +117,6 @@ while running:
 
 
 
-
     force = (0, 0)
     if keys[pygame.K_a] or keys[pygame.K_LEFT]:
         force = (-thrust_force, 0)
@@ -131,6 +130,14 @@ while running:
     if force != (0, 0):
         # Change 'local' to 'world' to ignore the player's rotation
         player.body.apply_force_at_world_point(force, player.body.position)
+
+    maxspeed = 750 
+    curspeed = player.body.velocity.length
+    if curspeed > maxspeed:
+        scale = maxspeed / curspeed
+        player.body.velocity = player.body.velocity * scale
+
+
 
 
 
