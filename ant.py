@@ -26,6 +26,7 @@ class Ant:
         self.shape.color = (255, 120, 120)  # For debug draw if needed
 
         self.angle = 0
+        self.turn_speed = 0.15
 
         gameSetup["space"].add(self.body, self.shape)
 
@@ -60,9 +61,19 @@ class Ant:
         # Turn Ant based off its velocity
         vx, vy = self.body.velocity
         speed = math.hypot(vx, vy)
-        if speed > 5:
-            self.angle = math.degrees(math.atan2(vy, vx)) - 90
 
+        if speed > 5:
+
+            # Target angle
+            target_angle = math.degrees(math.atan2(vy, vx)) - 90
+
+            # Shortest rotation direction
+            diff = (target_angle - self.angle + 180) % 360 - 180
+
+            # Smooth turn
+            self.angle += diff * self.turn_speed
+
+        # Rotate sprite
         rotated = pygame.transform.rotate(self.original_image, self.angle)
 
         rect = rotated.get_rect(center=screen_pos)
