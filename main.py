@@ -4,6 +4,7 @@ import pymunk
 import math
 import graphicsAndSound  
 import map
+from ant import Ant
 
 gameSetup = {}
 
@@ -12,17 +13,7 @@ map.createMap(gameSetup)
 
 
 # ── Player ────────────────────────────────────────────────────
-player_mass = 2.0
-player_radius = 28
-player_moment = pymunk.moment_for_circle(player_mass, 0, player_radius)
-player_body = pymunk.Body(player_mass, player_moment)
-player_body.position = (gameSetup["WORLD_WIDTH"] * 0.5, gameSetup["WORLD_HEIGHT"] * 0.5)
-player_shape = pymunk.Circle(player_body, player_radius)
-player_shape.mass = player_mass
-player_shape.elasticity = 0.85
-player_shape.friction = 0.7
-player_shape.color = (255, 120, 120)  # For debug draw if needed
-gameSetup["space"].add(player_body, player_shape)
+player = Ant(gameSetup, 0.1)
 
 # ── Enhanced Camera (follow + pan/zoom) ──────────────────────
 class Camera:
@@ -122,7 +113,7 @@ while running:
                 box_shape.color = (100, 200, 255)
                 box_shape.elasticity = 0.8
                 box_shape.friction = 0.7
-                gameSetup["SPACE"].add(box, box_shape)
+                gameSetup["space"].add(box, box_shape)
 
 
 
@@ -133,17 +124,17 @@ while running:
     if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         force = (thrust_force, 0)
     if keys[pygame.K_w] or keys[pygame.K_UP]:
-        force = (force[0], thrust_force)
+        force = (0, thrust_force)
     if keys[pygame.K_s] or keys[pygame.K_DOWN]:
-        force = (force[0], -thrust_force)
+        force = (0, -thrust_force)
     if force != (0, 0):
-        player_body.apply_force_at_local_point(force, (0, 0))
+        player.body.apply_force_at_local_point(force, (0, 0))
 
     # ── Physics Step ────────────────────────────────────────────
     gameSetup["space"].step(1 / 60.0)  # Fixed timestep
 
     # ── Update Camera ───────────────────────────────────────────
-    camera.update(player_body.position)
+    camera.update(player.body.position)
     cam_pos = (camera.center_x, camera.center_y)
     zoom = camera.zoom
 
@@ -159,20 +150,22 @@ while running:
         else:
             # Dynamic shapes
             if isinstance(shape, pymunk.Circle):
-                color = (255, 150, 150) if shape.body == player_body else (150, 220, 255)
+                color = (255, 150, 150) if shape.body == player.body else (150, 220, 255)
                 draw_circle(gameSetup["screen"], shape.body.position, shape.radius, color, cam_pos, zoom)
-            elif isinstance(shape, pymunk.Poly):
+            elif isinstance(shape, pymunk.Poly) and shape != player.shape:
                 # Rotated polygon
                 verts_screen = [world_to_screen(v.rotated(shape.body.angle) + shape.body.position, cam_pos, zoom)
-                                for v in shape.get_vertices()]
+                for v in shape.get_vertices()]
                 color = (150, 220, 255, 180)  # Semi-transparent blue boxes
                 pygame.draw.polygon(gameSetup["screen"], color, verts_screen)
                 # Outline
                 pygame.draw.polygon(gameSetup["screen"], (255, 255, 255), verts_screen, width=max(1, int(2 * zoom)))
+            elif isinstance(shape, pymunk.Poly):
+                player.draw(gameSetup, cam_pos, zoom)
 
     # ── HUD ─────────────────────────────────────────────────────
     font = pygame.font.SysFont(None, 32)
-    pos_text = font.render(f"World: {player_body.position.x:.0f}, {player_body.position.y:.0f}", True, (255,255,255))
+    pos_text = font.render(f"World: {player.body.position.x:.0f}, {player.body.position.y:.0f}", True, (255,255,255))
     gameSetup["screen"].blit(pos_text, (20, 20))
     
     pan_text = font.render(f"Pan: {camera.pan_offset_x:.0f}, {camera.pan_offset_y:.0f}", True, (200, 200, 255))
