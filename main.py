@@ -115,7 +115,7 @@ while running:
                 gameSetup["space"].add(box, box_shape)
                 gameSetup['spawn_sound'].play()
 
-
+    player.update_movement(keys, dt)
 
     # ── Input: Physics-based WASD movement ──────────────────────
     force = (0, 0)
