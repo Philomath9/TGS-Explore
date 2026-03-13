@@ -69,7 +69,6 @@ def draw_circle(screen, pos, radius, color, cam_center, zoom):
 
 # ── Main Loop ─────────────────────────────────────────────────
 running = True
-thrust_force = 4500  # Tune for speed/feel
 
 while running:
     dt = gameSetup["clock"].tick(60) / 1000.0
@@ -130,6 +129,8 @@ while running:
         force = (0, -thrust_force)
     if force != (0, 0):
         player.body.apply_force_at_local_point(force, (0, 0))
+    player.update_movement(keys, dt)
+
 
     # ── Physics Step ────────────────────────────────────────────
     gameSetup["space"].step(1 / 60.0)  # Fixed timestep
