@@ -13,7 +13,7 @@ map.createMap(gameSetup)
 
 
 # ── Player ────────────────────────────────────────────────────
-player = Ant(gameSetup, 0.1)
+player = Ant(gameSetup, 1.6)
 
 # ── Enhanced Camera (follow + pan/zoom) ──────────────────────
 class Camera:
