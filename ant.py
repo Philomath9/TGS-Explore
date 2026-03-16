@@ -8,9 +8,10 @@ class Ant:
     def __init__(self, gameSetup, scale):
 
         # Load walking animation sprite sheet
-        sheet = SpriteSheet("walking.png")
+        walk_sheet = SpriteSheet("walking.png")
+        idle_sheet = SpriteSheet("idle.png")
 
-        walk_frames = sheet.get_strip(
+        walk_frames = walk_sheet.get_strip(
             x=0,
             y=0,
             frame_width=64,
@@ -19,9 +20,17 @@ class Ant:
             scale=scale
         )
 
-        self.walk_animation = Animation(walk_frames, frame_time=0.08)
+        idle_frames = idle_sheet.get_strip(x=0, y=0, frame_width=64, frame_height=64, count=6, scale=scale)
 
-        self.current_frame = walk_frames[0]
+        # Animation dictionary
+        self.animations = {
+            "idle": Animation(idle_frames, frame_time=0.12),
+            "walk": Animation(walk_frames, frame_time=0.08)
+        }
+
+        self.state = "idle"
+        self.current_animation = self.animations[self.state]
+        self.current_frame = self.current_animation.get_frame()
 
         # Physics body (rotation locked)
         self.body = pymunk.Body(mass=2.0, moment=math.inf)
@@ -72,11 +81,18 @@ class Ant:
         speed = self.body.velocity.length
 
         if speed > 5:
-            self.walk_animation.update(dt * (speed / self.move_speed) * 6) #Faster animation as speed increases
-            self.current_frame = self.walk_animation.get_frame()
+            self.set_state("walk")
         else:
-            self.walk_animation.reset()
-            self.current_frame = self.walk_animation.get_frame()
+            self.set_state("idle")
+
+        # animation playback
+        if self.state == "walk":
+            self.current_animation.update(dt * (speed / self.move_speed) * 6)
+        else:
+            self.current_animation.update(dt)
+
+        self.current_frame = self.current_animation.get_frame()
+
 
     def draw(self, gameSetup, cam_pos, zoom):
 
@@ -100,3 +116,10 @@ class Ant:
 
         rect = rotated.get_rect(center=screen_pos)
         gameSetup["screen"].blit(rotated, rect)
+    
+
+    def set_state(self, new_state):
+        if new_state != self.state:
+            self.state = new_state
+            self.current_animation = self.animations[self.state]
+            self.current_animation.reset()
