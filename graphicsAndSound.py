@@ -8,9 +8,12 @@ def doGraphicsSetup(gameSetup):
     pygame.mixer.init()
 # ── Full Screen Setup ────────────────────────────────────────
     info = pygame.display.Info()
-    WIDTH = info.current_w
-    HEIGHT = info.current_h
-    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+    #WIDTH = info.current_w
+    #HEIGHT = info.current_h
+    WIDTH = 800
+    HEIGHT = 600
+    #screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("TGSgame")
     clock = pygame.time.Clock()
 
