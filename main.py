@@ -72,15 +72,15 @@ running = True
 
 while running:
     dt = gameSetup["clock"].tick(60) / 1000.0
-    mx, my = pygame.mouse.get_pos()
-    if(mx < gameSetup["WIDTH"] * 0.1):
-        camera.pan_offset_x -= 10 / camera.zoom
-    if(mx > gameSetup["WIDTH"] * 0.9):
-        camera.pan_offset_x += 10 / camera.zoom
-    if(my < gameSetup["HEIGHT"] * 0.1):
-        camera.pan_offset_y += 10 / camera.zoom
-    if(my > gameSetup["HEIGHT"] * 0.9):
-        camera.pan_offset_y -= 10 / camera.zoom
+ #   mx, my = pygame.mouse.get_pos()
+ #   if(mx < gameSetup["WIDTH"] * 0.1):
+ #       camera.pan_offset_x -= 10 / camera.zoom
+ #   if(mx > gameSetup["WIDTH"] * 0.9):
+ #       camera.pan_offset_x += 10 / camera.zoom
+ #   if(my < gameSetup["HEIGHT"] * 0.1):
+ #       camera.pan_offset_y += 10 / camera.zoom
+ #   if(my > gameSetup["HEIGHT"] * 0.9):
+ #       camera.pan_offset_y -= 10 / camera.zoom
 
      
 
