@@ -2,6 +2,7 @@
 import pygame
 import pymunk
 import math
+import random
 import graphicsAndSound  
 import map
 from ant import Ant
@@ -46,6 +47,12 @@ camera = Camera(gameSetup["WIDTH"], gameSetup["HEIGHT"])
 panning = False
 last_mouse_pos = (0, 0)
 pan_button = 3  # Right mouse button
+
+# ── Yellow Circle Spawner ───────────────────────────────────
+spawn_timer = 0.0
+spawn_interval = 2.0  # Spawn a new circle every 2 seconds
+spawned_circles = []  # Track yellow circles for rendering
+score = 0  # Player score
 
 # ── Drawing Helpers (zoom-aware, Y-flip) ─────────────────────
 def world_to_screen(world_pos, cam_center, zoom):
@@ -117,9 +124,59 @@ while running:
 
     player.update_movement(keys, dt)
 
+    # ── Spawn Yellow Circles ────────────────────────────────────
+    spawn_timer += dt
+    if spawn_timer >= spawn_interval:
+        spawn_timer = 0.0
+        # Random position in world
+        spawn_x = random.randint(100, gameSetup["WORLD_WIDTH"] - 100)
+        spawn_y = random.randint(100, gameSetup["WORLD_HEIGHT"] - 100)
+        # Create yellow circle
+        circle_body = pymunk.Body(1.0, pymunk.moment_for_circle(1.0, 0, 15))
+        circle_body.position = (spawn_x, spawn_y)
+        circle_shape = pymunk.Circle(circle_body, 15)
+        circle_shape.elasticity = 0.8
+        circle_shape.friction = 0.5
+        circle_shape.color = (255, 255, 0)  # Yellow
+        gameSetup["space"].add(circle_body, circle_shape)
+        spawned_circles.append(circle_shape)
 
     # ── Physics Step ────────────────────────────────────────────
     gameSetup["space"].step(1 / 60.0)  # Fixed timestep
+
+    # ── Collision Detection (Yellow Circles) ────────────────────
+    circles_to_remove = []
+    for circle in spawned_circles:
+        # Check if circle is still in space (not removed)
+        if circle.body in gameSetup["space"].bodies:
+            # Calculate distance between player and circle
+            dx = player.body.position.x - circle.body.position.x
+            dy = player.body.position.y - circle.body.position.y
+            distance = math.sqrt(dx * dx + dy * dy)
+            
+            # Get player's collision radius from bounding box
+            vertices = player.shape.get_vertices()
+            if vertices:
+                # Calculate approximate radius as distance from center to first vertex
+                max_dist = 0
+                for v in vertices:
+                    dist = math.sqrt(v.x**2 + v.y**2)
+                    max_dist = max(max_dist, dist)
+                player_radius = max_dist
+            else:
+                player_radius = 50  # Fallback
+            
+            circle_radius = circle.radius
+            # Collision if distance < sum of radii
+            if distance < player_radius + circle_radius:
+                # Remove circle from physics space
+                gameSetup["space"].remove(circle.body, circle)
+                circles_to_remove.append(circle)
+                score += 1
+    
+    # Remove collected circles from tracking list
+    for circle in circles_to_remove:
+        spawned_circles.remove(circle)
 
     # ── Update Camera ───────────────────────────────────────────
     camera.update(player.body.position)
@@ -138,7 +195,11 @@ while running:
         else:
             # Dynamic shapes
             if isinstance(shape, pymunk.Circle):
-                color = (255, 150, 150) if shape.body == player.body else (150, 220, 255)
+                # Check if circle has a custom color (yellow spawned circles)
+                if hasattr(shape, 'color'):
+                    color = shape.color
+                else:
+                    color = (255, 150, 150) if shape.body == player.body else (150, 220, 255)
                 draw_circle(gameSetup["screen"], shape.body.position, shape.radius, color, cam_pos, zoom)
             elif isinstance(shape, pymunk.Poly) and shape != player.shape:
                 # Rotated polygon
@@ -153,11 +214,14 @@ while running:
 
     # ── HUD ─────────────────────────────────────────────────────
     font = pygame.font.SysFont(None, 32)
+    score_text = font.render(f"Score: {score}", True, (255, 255, 100))
+    gameSetup["screen"].blit(score_text, (20, 20))
+    
     pos_text = font.render(f"World: {player.body.position.x:.0f}, {player.body.position.y:.0f}", True, (255,255,255))
-    gameSetup["screen"].blit(pos_text, (20, 20))
+    gameSetup["screen"].blit(pos_text, (20, 60))
     
     pan_text = font.render(f"Pan: {camera.pan_offset_x:.0f}, {camera.pan_offset_y:.0f}", True, (200, 200, 255))
-    gameSetup["screen"].blit(pan_text, (20, 90))
+    gameSetup["screen"].blit(pan_text, (20, 100))
     
     ctrl_text = pygame.font.SysFont(None, 24).render("ESC=Quit | WASD=Move | Right Drag=Pan | Wheel=Zoom | LClick=Spawn", True, (150, 150, 150))
     gameSetup["screen"].blit(ctrl_text, (20, gameSetup["HEIGHT"] - 40))

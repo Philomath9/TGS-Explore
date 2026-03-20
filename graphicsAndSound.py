@@ -18,7 +18,7 @@ def doGraphicsSetup(gameSetup):
     clock = pygame.time.Clock()
 
     # Large world (map size)
-    WORLD_WIDTH, WORLD_HEIGHT = 4000, 4000
+    WORLD_WIDTH, WORLD_HEIGHT = 2000, 2000
 
     # Pymunk physics space
     space = pymunk.Space()
