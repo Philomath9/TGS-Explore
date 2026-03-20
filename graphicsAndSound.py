@@ -16,6 +16,9 @@ def doGraphicsSetup(gameSetup):
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("TGSgame")
     clock = pygame.time.Clock()
+    #background map image loading
+    gameSetup['backgroundimage'] = pygame.image.load("sand1.png").convert()
+
 
     # Large world (map size)
     WORLD_WIDTH, WORLD_HEIGHT = 2000, 2000

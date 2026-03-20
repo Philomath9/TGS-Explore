@@ -87,7 +87,7 @@ while running:
  #   if(my > gameSetup["HEIGHT"] * 0.9):
  #       camera.pan_offset_y -= 10 / camera.zoom
 
-     
+    gameSetup['screen'].blit(gameSetup['backgroundimage'], (0, 0))
 
 
     keys = pygame.key.get_pressed()
@@ -133,7 +133,7 @@ while running:
     zoom = camera.zoom
 
     # ── Render ──────────────────────────────────────────────────
-    gameSetup["screen"].fill((25, 35, 60))  # Dark BG
+    #gameSetup["screen"].fill((25, 35, 60))  # Dark BG
 
     # Draw ALL shapes (static + dynamic)
     for shape in gameSetup["space"].shapes:
