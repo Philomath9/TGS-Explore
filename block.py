@@ -9,7 +9,7 @@ class Block:
         # Random position if not provided
         if position is None:
             x = random.uniform(50, gameSetup["WORLD_WIDTH"] - 50)
-            y = random.uniform(50, gameSetup["WORLD_HEIGHT"] - 50)
+            y = random.uniform(160, gameSetup["WORLD_HEIGHT"] - 50)
             position = (x, y)
 
         # Create physics body
