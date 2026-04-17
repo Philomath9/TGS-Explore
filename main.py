@@ -74,6 +74,7 @@ def draw_circle(screen, pos, radius, color, cam_center, zoom):
 
 # ── Main Loop ─────────────────────────────────────────────────
 running = True
+start_time = pygame.time.get_ticks() / 1000.0  # Convert to seconds
 
 while running:
     dt = gameSetup["clock"].tick(60) / 1000.0
@@ -174,6 +175,15 @@ while running:
     
     ctrl_text = pygame.font.SysFont(None, 24).render("ESC=Quit | WASD=Move | Right Drag=Pan | Wheel=Zoom | LClick=Spawn", True, (150, 150, 150))
     gameSetup["screen"].blit(ctrl_text, (20, gameSetup["HEIGHT"] - 40))
+    
+    # Timer display
+    elapsed_time = pygame.time.get_ticks() / 1000.0 - start_time
+    hours = int(elapsed_time // 3600)
+    minutes = int((elapsed_time % 3600) // 60)
+    seconds = int(elapsed_time % 60)
+    timer_text = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+    timer_surface = font.render(timer_text, True, (255, 255, 100))
+    gameSetup["screen"].blit(timer_surface, (gameSetup['WIDTH'] - 200, 20))
 
     pygame.display.flip()
 
