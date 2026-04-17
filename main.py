@@ -105,7 +105,7 @@ while running:
         # ── Mouse Pan (Right Drag) ──────────────────────────────
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left Click: Spawn box
-                Block.spawn_block_at_mouse(event.pos, camera, gameSetup)
+                Block.spawn_block_at_mouse(event.pos, camera, blocks, gameSetup)
 
     player.update_movement(keys, dt)
     # ── Circle Manager Update ──────────────────────────────────

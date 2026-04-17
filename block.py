@@ -23,7 +23,7 @@ class Block:
 
         gameSetup["space"].add(self.body, self.shape)
 
-    def spawn_block_at_mouse(mouse_pos, camera, gameSetup):
+    def spawn_block_at_mouse(mouse_pos, camera, blocks, gameSetup):
         mx, my = mouse_pos
 
         screen_center_x = gameSetup["WIDTH"] / 2
@@ -39,5 +39,5 @@ class Block:
         world_x = max(50, min(gameSetup["WORLD_WIDTH"] - 50, world_x))
         world_y = max(50, min(gameSetup["WORLD_HEIGHT"] - 50, world_y))
 
-        Block(gameSetup, position=(world_x, world_y))
+        blocks.append(Block(gameSetup, position=(world_x, world_y)))
         gameSetup['spawn_sound'].play()
