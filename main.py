@@ -135,6 +135,7 @@ while running:
     # ── Render ──────────────────────────────────────────────────
     gameSetup["screen"].fill((25, 35, 60))  # Dark BG
 
+    bcount = 0
     # Draw ALL shapes (static + dynamic)
     for shape in gameSetup["space"].shapes:
         if shape.body is gameSetup["space"].static_body:
@@ -158,6 +159,8 @@ while running:
                 pygame.draw.polygon(gameSetup["screen"], color, verts_screen)
                 # Outline
                 pygame.draw.polygon(gameSetup["screen"], (255, 255, 255), verts_screen, width=max(1, int(2 * zoom)))
+                if(shape.body.position.y < 160):
+                    bcount = bcount +1
             elif isinstance(shape, pymunk.Poly):
                 player.draw(gameSetup, cam_pos, zoom)
 
@@ -169,7 +172,7 @@ while running:
     pos_text = font.render(f"World: {player.body.position.x:.0f}, {player.body.position.y:.0f}", True, (255,255,255))
     gameSetup["screen"].blit(pos_text, (20, 60))
     
-    pan_text = font.render(f"Pan: {camera.pan_offset_x:.0f}, {camera.pan_offset_y:.0f}", True, (200, 200, 255))
+    pan_text = font.render(f"Blocks Below: {bcount:.0f}", True, (200, 200, 255))
     gameSetup["screen"].blit(pan_text, (20, 100))
     
     ctrl_text = pygame.font.SysFont(None, 24).render("ESC=Quit | WASD=Move | Right Drag=Pan | Wheel=Zoom | LClick=Spawn", True, (150, 150, 150))
