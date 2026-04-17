@@ -41,3 +41,6 @@ class Block:
 
         blocks.append(Block(gameSetup, position=(world_x, world_y)))
         gameSetup['spawn_sound'].play()
+    
+    def in_bottom(self, height):
+        return self.body.position.y < height
