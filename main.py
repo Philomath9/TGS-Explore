@@ -7,6 +7,7 @@ import graphicsAndSound
 import map
 from ant import Ant
 from circle import CircleManager
+from block import Block
 
 gameSetup = {}
 
@@ -16,6 +17,9 @@ map.createMap(gameSetup)
 
 # ── Player ────────────────────────────────────────────────────
 player = Ant(gameSetup, 1.6)
+blocks = []
+for _ in range(20):
+    blocks.append(Block(gameSetup))
 
 # ── Enhanced Camera (follow + pan/zoom) ──────────────────────
 class Camera:
@@ -100,25 +104,7 @@ while running:
         # ── Mouse Pan (Right Drag) ──────────────────────────────
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left Click: Spawn box
-                mx, my = event.pos
-                # Screen → world (zoom + Y-flip)
-                screen_center_x, screen_center_y = gameSetup["WIDTH"] / 2, gameSetup["HEIGHT"] / 2
-                dx = (mx - screen_center_x) / camera.zoom
-                dy = (screen_center_y - my) / camera.zoom
-                world_x = camera.center_x + dx
-                world_y = camera.center_y + dy
-                # Clamp spawn to world
-                world_x = max(50, min(gameSetup["WORLD_WIDTH"] - 50, world_x))
-                world_y = max(50, min(gameSetup["WORLD_HEIGHT"] - 50, world_y))
-                # Create box
-                box = pymunk.Body(3, pymunk.moment_for_box(3, (60, 40)))
-                box.position = (world_x, world_y)
-                box_shape = pymunk.Poly.create_box(box, (60, 40))
-                box_shape.color = (100, 200, 255)
-                box_shape.elasticity = 0.8
-                box_shape.friction = 0.7
-                gameSetup["space"].add(box, box_shape)
-                gameSetup['spawn_sound'].play()
+                Block.spawn_block_at_mouse(event.pos, camera, gameSetup)
 
     player.update_movement(keys, dt)
     # ── Circle Manager Update ──────────────────────────────────
