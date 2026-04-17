@@ -155,13 +155,6 @@ while running:
         if(not block.in_bottom(160)):
             bcount = bcount + 1
 
-    if bcount == 20:
-        win_font = pygame.font.SysFont(None, 64)
-        win_text = win_font.render("You Win! Time: " + timer_text, True, (255, 255, 100))
-        gameSetup["screen"].blit(win_text, (gameSetup["WIDTH"] // 2 - win_text.get_width() // 2, gameSetup["HEIGHT"] // 2 - win_text.get_height() // 2))
-        asyncio.sleep(2)
-        running = False
-
     # ── HUD ─────────────────────────────────────────────────────
     font = pygame.font.SysFont(None, 32)
     score_text = font.render(f"Score: {circle_manager.get_score()}", True, (255, 255, 100))
@@ -184,6 +177,13 @@ while running:
     timer_text = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
     timer_surface = font.render(timer_text, True, (255, 255, 100))
     gameSetup["screen"].blit(timer_surface, (gameSetup['WIDTH'] - 200, 20))
+
+    if bcount == 0:
+        win_font = pygame.font.SysFont(None, 64)
+        win_text = win_font.render("You Win! Time: " + timer_text, True, (255, 255, 100))
+        gameSetup["screen"].blit(win_text, (gameSetup["WIDTH"] // 2 - win_text.get_width() // 2, gameSetup["HEIGHT"] // 2 - win_text.get_height() // 2))
+        asyncio.sleep(2)
+        running = False
 
     pygame.display.flip()
 
