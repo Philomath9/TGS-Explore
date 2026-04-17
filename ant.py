@@ -49,11 +49,16 @@ class Ant:
         self.turn_speed = 0.15
 
         self.move_speed = 500.0
+        self.base_move_speed = 500.0
         self.move_accel = 24.0
         self.move_decel = 4.5
 
         self.input_smoothing = 6.0
         self.smoothed_input = pymunk.Vec2d(0.0, 0.0)
+
+        # Block holding
+        self.held_block = None
+        self.holding_block = False
 
         gameSetup["space"].add(self.body, self.shape)
 
@@ -71,6 +76,10 @@ class Ant:
         input_blend = min(1.0, self.input_smoothing * dt)
         self.smoothed_input += (input_vec - self.smoothed_input) * input_blend
 
+        # Apply 15% speed reduction when holding a block
+        speed_multiplier = 0.85 if self.holding_block else 1.0
+        self.move_speed = self.base_move_speed * speed_multiplier
+        
         desired_velocity = self.smoothed_input * self.move_speed
         response = self.move_accel if input_vec.length > 0 else self.move_decel
         blend = min(1.0, response * dt)
@@ -87,7 +96,7 @@ class Ant:
 
         # animation playback
         if self.state == "walk":
-            self.current_animation.update(dt * (speed / self.move_speed) * 6)
+            self.current_animation.update(dt * (speed / self.base_move_speed) * 6)
         else:
             self.current_animation.update(dt)
 
@@ -116,7 +125,43 @@ class Ant:
 
         rect = rotated.get_rect(center=screen_pos)
         gameSetup["screen"].blit(rotated, rect)
+        
+        # Draw held block in front of player's head
+        if self.holding_block and self.held_block:
+            # Position block in front of player (offset based on angle)
+            angle_rad = math.radians(self.angle + 90)
+            offset_distance = 50
+            block_offset_x = math.cos(angle_rad) * offset_distance
+            block_offset_y = math.sin(angle_rad) * offset_distance
+            
+            block_screen_x = int(screen_pos[0] + block_offset_x)
+            block_screen_y = int(screen_pos[1] + block_offset_y)
+            
+            # Draw block as a rotated rectangle
+            block_width, block_height = self.held_block.size
+            block_rect_width = int(block_width * zoom)
+            block_rect_height = int(block_height * zoom)
+            
+            # Create a surface for the block
+            block_surf = pygame.Surface((block_rect_width, block_rect_height), pygame.SRCALPHA)
+            block_surf.fill((100, 200, 255, 200))
+            
+            # Rotate the block surface based on player angle
+            rotated_block = pygame.transform.rotate(block_surf, self.angle)
+            block_rect = rotated_block.get_rect(center=(block_screen_x, block_screen_y))
+            gameSetup["screen"].blit(rotated_block, block_rect)
     
+    def pick_up_block(self, block):
+        """Pick up and hold a block"""
+        self.held_block = block
+        self.holding_block = True
+    
+    def release_block(self):
+        """Release the held block and return it"""
+        block = self.held_block
+        self.held_block = None
+        self.holding_block = False
+        return block
 
     def set_state(self, new_state):
         if new_state != self.state:

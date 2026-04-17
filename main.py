@@ -99,6 +99,43 @@ while running:
     keys = pygame.key.get_pressed()
     if keys[pygame.K_ESCAPE]:
         running = False
+    
+    # ── Block Holding (E Key) ───────────────────────────────────
+    if keys[pygame.K_e]:
+        if not player.holding_block:
+            # Find nearest block to player
+            nearest_block = None
+            nearest_distance = float('inf')
+            pickup_range = 150  # How close block needs to be
+            
+            for block in blocks:
+                distance = math.hypot(
+                    block.body.position.x - player.body.position.x,
+                    block.body.position.y - player.body.position.y
+                )
+                if distance < nearest_distance and distance < pickup_range:
+                    nearest_distance = distance
+                    nearest_block = block
+            
+            if nearest_block:
+                # Remove from physics space and blocks array
+                gameSetup["space"].remove(nearest_block.body, nearest_block.shape)
+                blocks.remove(nearest_block)
+                player.pick_up_block(nearest_block)
+    else:
+        if player.holding_block:
+            released_block = player.release_block()
+            if released_block:
+                # Position block in front of player and add back to world
+                angle_rad = math.radians(player.angle + 90)
+                offset_distance = 80
+                block_offset_x = math.cos(angle_rad) * offset_distance
+                block_offset_y = math.sin(angle_rad) * offset_distance
+                
+                released_block.body.position = (player.body.position.x + block_offset_x, player.body.position.y + block_offset_y)
+                released_block.body.velocity = player.body.velocity
+                gameSetup["space"].add(released_block.body, released_block.shape)
+                blocks.append(released_block)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -166,7 +203,7 @@ while running:
     pan_text = font.render(f"Blocks Remaining: {bcount:.0f}", True, (200, 200, 255))
     gameSetup["screen"].blit(pan_text, (20, 100))
     
-    ctrl_text = pygame.font.SysFont(None, 24).render("ESC=Quit | WASD=Move | Right Drag=Pan | Wheel=Zoom | LClick=Spawn", True, (150, 150, 150))
+    ctrl_text = pygame.font.SysFont(None, 24).render("ESC=Quit | WASD=Move | Right Drag=Pan | Wheel=Zoom | LClick=Spawn | E=Hold Block", True, (150, 150, 150))
     gameSetup["screen"].blit(ctrl_text, (20, gameSetup["HEIGHT"] - 40))
     
     # Timer display
