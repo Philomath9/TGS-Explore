@@ -21,6 +21,11 @@ class Block:
         self.shape.friction = 0.7
         self.shape.color = (100, 200, 255)
 
+        # Freeze tracking
+        self.frozen = False
+        self.time_in_bottom = 0.0
+        self.original_mass = mass
+
         gameSetup["space"].add(self.body, self.shape)
 
     def spawn_block_at_mouse(mouse_pos, camera, blocks, gameSetup):
@@ -44,3 +49,21 @@ class Block:
     
     def in_bottom(self, height):
         return self.body.position.y < height
+    
+    def update_freeze(self, dt, bottom_height=160):
+        """Track time in bottom and freeze after 1 second"""
+        if self.in_bottom(bottom_height) and not self.frozen:
+            self.time_in_bottom += dt
+            if self.time_in_bottom >= 1.0:
+                self.freeze()
+        elif not self.in_bottom(bottom_height):
+            self.time_in_bottom = 0.0
+    
+    def freeze(self):
+        """Freeze the block in place"""
+        if not self.frozen:
+            self.frozen = True
+            self.body.velocity = (0, 0)
+            self.body.angular_velocity = 0
+            # Set very high friction to prevent movement
+            self.shape.friction = 1000

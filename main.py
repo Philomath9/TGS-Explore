@@ -189,6 +189,7 @@ while running:
 
     # Check Blocks
     for block in blocks:
+        block.update_freeze(dt)
         if(not block.in_bottom(160)):
             bcount = bcount + 1
 
@@ -219,7 +220,7 @@ while running:
         win_font = pygame.font.SysFont(None, 64)
         win_text = win_font.render("You Win! Time: " + timer_text, True, (255, 255, 100))
         gameSetup["screen"].blit(win_text, (gameSetup["WIDTH"] // 2 - win_text.get_width() // 2, gameSetup["HEIGHT"] // 2 - win_text.get_height() // 2))
-        asyncio.sleep(2)
+        asyncio.sleep(10)
         running = False
 
     pygame.display.flip()
